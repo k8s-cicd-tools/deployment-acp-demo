@@ -4,13 +4,11 @@ import * as aws from "@pulumi/aws";
 export class AwsS3 {
     bucketName: string;
     bucket_object: any;
-    provider: aws.Provider;
     dependsOn: any[];
 
-    constructor(bucketName: string, provider: aws.Provider, dependsOn: any[]) {
+    constructor(bucketName: string, dependsOn?: any[]) {
         this.bucketName = bucketName;
-        this.provider = provider;
-        this.dependsOn = dependsOn;
+        this.dependsOn = dependsOn || [];
         this.create();
     }
 
@@ -22,10 +20,12 @@ export class AwsS3 {
             versioning: {
                 enabled: true,
             }
-        }, {dependsOn: this.dependsOn, provider: this.provider});
+        }, {dependsOn: this.dependsOn});
     }
 
     getDependsOn() {
         return [this.bucket_object];
     }
+
 }
+

@@ -1,7 +1,7 @@
 import * as aws from "@pulumi/aws";
 
 
-export class AwsKopsUser {
+export class AwsPulumiUser {
     name: string;
     group_object: any;
     groupPolicy: any;
@@ -29,14 +29,7 @@ export class AwsKopsUser {
                 Statement: [
                     {
                         Action: [
-                            "ec2:*",
-                            "route53:*",
                             "s3:*",
-                            "iam:*",
-                            "sqs:*",
-                            "events:*",
-                            "autoscaling:*",
-                            "elasticloadbalancing:*",
                         ],
                         Effect: "Allow",
                         Resource: "*",

@@ -1,0 +1,18 @@
+[
+    {
+        "serverName": "server1",
+        "name": "database_a",
+        "restoreFileName": "db.sql",
+        "tables": [
+            {
+                "name": "table1"
+            },
+            {
+                "name": "table2"
+            },
+            {
+                "name": "table3"
+            }
+        ]
+    }
+]

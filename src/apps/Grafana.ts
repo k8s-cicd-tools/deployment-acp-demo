@@ -1,6 +1,6 @@
-import * as pulumi from "@pulumi/pulumi";
-import * as kubernetes from "@pulumi/kubernetes";
+
 import * as k8s from "@pulumi/kubernetes";
+import * as fs from "fs";
 
 
 export class Grafana {
@@ -22,8 +22,19 @@ export class Grafana {
         // add dependsOn
         this.dependsOn = this.dependsOn.concat(dependsOn);
 
+        const configMap = new k8s.core.v1.ConfigMap(`${this.name} configmap`, {
+            metadata: {
+                namespace: this.namespace,
+                name: "grafana-datasources"
+            },
+            data: {
+                "prometheus.yaml": fs.readFileSync('./configs/grafana/prometheus.yaml').toString(),
+            },
+        }, { dependsOn: this.dependsOn });
+
+
         const appLabels = { app: this.name };
-        const grafana = new k8s.apps.v1.Deployment(this.name, {
+        const grafana = new k8s.apps.v1.Deployment(`${this.name} deployment`, {
             metadata: {
                 name: this.name,
                 namespace: this.namespace,
@@ -88,7 +99,7 @@ export class Grafana {
                     },
                 },
             },
-        }, { dependsOn: this.dependsOn });
+        }, { dependsOn: configMap });
 
 
         // Create a Service
@@ -112,8 +123,9 @@ export class Grafana {
                 ],
                 selector: appLabels,
             },
-        });
-        //}, { dependsOn: grafana });
+        //});
+        }, { dependsOn: grafana });
+
     }
 
     // getDependsOn() {

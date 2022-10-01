@@ -1,5 +1,0 @@
-
-export class Demo3 {
-
-
-}

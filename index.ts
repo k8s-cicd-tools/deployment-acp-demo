@@ -1,36 +1,45 @@
-import { Mysql } from "./src/apps/Mysql";
-import { Grafana } from "./src/apps/Grafana";
+import { Acp } from "./src/apps/Acp";
 import { NameSpace } from "./src/classes/NameSpace";
 import { Cluster } from "./src/classes/Cluster";
 import { Kops } from "./src/classes/Kops";
 import {OpenPort} from "./src/classes/OpenPort";
 
+
+const kubeConfigPath = "/home/desarrollo/.kube/config";
+const awsRegion = "us-east-1";
+const awsRegionZone = "us-east-1a";
+const developerUser = "dev1";
+const namespace = "test";
+const clusterName = "myfirstcluster.k8s.local";
+const masterSize = "t3.medium";
+const masterCount = 1;
+const nodeSize = "t3.medium";
+const nodeCount = 2;
+const kubernetesVersion = "v1.21.1";
+
 //create the namespace
-const nameSpaceTest = new NameSpace("test", {app: "test"}, []);
+const namespaceTest = new NameSpace(namespace, {app: "test"}, []);
 
 //create the mysql app
-const appMysqlServer1 = new Mysql("mysql1","5.6", "*", 3306, "2Gi", []);
-const grafana = new Grafana("grafana", "latest", 32000, []);
-//const acp = new Acp("acp", "latest", 32000, []);
+const acp = new Acp(namespaceTest.name, developerUser, awsRegion, kubeConfigPath);
 
 //add the app to the namespace
-//nameSpaceTest.addApplication(appMysqlServer1);
-nameSpaceTest.addApplication(grafana);
+namespaceTest.addApplication(acp);
 
 //create the cluster
 const cluster = new Cluster(
-    "myfirstcluster.k8s.local",
-    "t3.medium",
-    1,
-    "us-east-1",
-    "us-east-1a",
-    "v1.21.1",
-    "t3.medium",
-    2
+    clusterName,
+    masterSize,
+    masterCount,
+    awsRegion,
+    awsRegionZone,
+    kubernetesVersion,
+    nodeSize,
+    nodeCount
 );
 
 //add the namespace to the cluster
-cluster.addNamespace(nameSpaceTest);
+cluster.addNamespace(namespaceTest);
 
 //Open ports for the cluster
 //const openPort80 = new OpenPort("ingress", 80, "tcp", ["0.0.0.0/0"]);
@@ -39,7 +48,7 @@ cluster.addNamespace(nameSpaceTest);
 
 const kops = new Kops(
     "TestKops",
-    "us-east-1",
+    awsRegion,
     [cluster]
 );
 

@@ -1,8 +1,6 @@
 import { AwsS3 } from "./AwsS3";
 import { AwsKopsUser } from "./AwsKopsUser";
-import { getSecurityGroupsId } from "./AwsUtils";
 import { Cluster } from "./Cluster";
-import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
 export class Kops {
@@ -25,17 +23,9 @@ export class Kops {
     }
 
     create() {
-        this.kopsUser = new AwsKopsUser("kops", undefined, this.dependsOn);
+        this.kopsUser = new AwsKopsUser("kops", this.dependsOn);
 
-        this.kopsProvider = new aws.Provider(`${this.name} kops provider`, {
-            accessKey: pulumi.interpolate`${this.kopsUser.accessKey.id}`,
-            secretKey: pulumi.interpolate`${this.kopsUser.accessKey.secret}`,
-            region: this.region,
-            skipCredentialsValidation: true,
-            skipMetadataApiCheck: false,
-        }, {dependsOn: this.kopsUser.getDependsOn()});
-
-        this.kopsStateS3 = new AwsS3(`kops-state-store-${this.name.toLowerCase().replace(" ", "-")}-r3eu8ow`, this.kopsProvider, [this.kopsProvider]);
+        this.kopsStateS3 = new AwsS3(`kops-state-store-${this.name.toLowerCase().replace(" ", "-")}-r3eu8ow`, [this.kopsUser.getDependsOn()]);
         const kopsStateStore = `s3://${this.kopsStateS3.bucketName}`;
         //Create clusters
         this.clusters.forEach(cluster => {
@@ -46,7 +36,7 @@ export class Kops {
                 ...this.environment
             };
 
-            cluster.create(`${kopsStateStore}`, this.kopsProvider, newEnvironment, this.kopsStateS3.getDependsOn());
+            cluster.create(`${kopsStateStore}`, newEnvironment, this.kopsStateS3.getDependsOn());
             this.clusters_objects.push(cluster.getDependsOn());
 
         });

@@ -1,0 +1,7 @@
+[
+    {
+        "name": "server1",
+        "ip": "server1",
+        "port": 3306
+    }
+]

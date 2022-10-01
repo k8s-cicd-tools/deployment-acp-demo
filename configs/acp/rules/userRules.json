@@ -1,0 +1,46 @@
+[
+  {
+    "namespace": "test",
+    "appName": "demo1",
+    "databaseName": "database_a",
+    "tables": [
+      {
+        "name": "table1",
+        "actions": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ]
+      },
+      {
+        "name": "table2",
+        "actions": [
+          "SELECT"
+        ]
+      }
+    ]
+  },
+  {
+    "namespace": "test",
+    "appName": "demo2",
+    "databaseName": "database_a",
+    "tables": [
+      {
+        "name": "table1",
+        "actions": []
+      },
+      {
+        "name": "table2",
+        "actions": [
+          "SELECT",
+          "INSERT"
+        ]
+      },
+      {
+        "name": "table3",
+        "actions": []
+      }
+    ]
+  }
+]
